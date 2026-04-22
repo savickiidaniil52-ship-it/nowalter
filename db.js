@@ -1,9 +1,22 @@
 const { Pool } = require('pg');
+const dns = require('node:dns');
+
+// Фикс для Render: заставляем Node.js использовать IPv4, чтобы не было ошибки ENETUNREACH
+dns.setDefaultResultOrder('ipv4first');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  family: 4
+  ssl: {
+    rejectUnauthorized: false // Обязательно для подключения к Supabase извне
+  },
+  // Дополнительные настройки для стабильности
+  connectionTimeoutMillis: 5000,
+  idleTimeoutMillis: 30000
+});
+
+// Логируем ошибки пула, чтобы видеть их в консоли Render
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
 });
 
 module.exports = {
@@ -41,7 +54,6 @@ module.exports = {
   },
 
   async deleteUser(userId) {
-    await pool.query('DELETE FROM pastes WHERE user_id = $1', [userId]);
     await pool.query('DELETE FROM users WHERE id = $1', [userId]);
   },
 
@@ -50,11 +62,10 @@ module.exports = {
   },
 
   async createPaste(slug, title, content, visibility, userId) {
-    const { rows } = await pool.query(
-      'INSERT INTO pastes (slug, title, content, visibility, user_id) VALUES ($1,$2,$3,$4,$5) RETURNING *',
-      [slug, title, content, visibility, userId || null]
+    await pool.query(
+      'INSERT INTO pastes (slug, title, content, visibility, user_id) VALUES ($1, $2, $3, $4, $5)',
+      [slug, title, content, visibility, userId]
     );
-    return rows[0];
   },
 
   async getPasteBySlug(slug) {
@@ -65,21 +76,17 @@ module.exports = {
     return rows[0];
   },
 
-  async incrementViews(slug) {
-    await pool.query('UPDATE pastes SET views = views + 1 WHERE slug = $1', [slug]);
-  },
-
   async getPublicPastes(search = '') {
     if (search) {
       const { rows } = await pool.query(
-        `SELECT p.*, u.username FROM pastes p LEFT JOIN users u ON p.user_id = u.id
+        `SELECT p.*, u.username FROM pastes p LEFT JOIN users u ON p.user_id = u.id 
          WHERE p.visibility = 'public' AND p.title ILIKE $1 ORDER BY p.created_at DESC`,
         [`%${search}%`]
       );
       return rows;
     }
     const { rows } = await pool.query(
-      `SELECT p.*, u.username FROM pastes p LEFT JOIN users u ON p.user_id = u.id
+      `SELECT p.*, u.username FROM pastes p LEFT JOIN users u ON p.user_id = u.id 
        WHERE p.visibility = 'public' ORDER BY p.created_at DESC`
     );
     return rows;
@@ -103,18 +110,20 @@ module.exports = {
     await pool.query('DELETE FROM pastes WHERE slug = $1', [slug]);
   },
 
+  async incrementViews(slug) {
+    await pool.query('UPDATE pastes SET views = views + 1 WHERE slug = $1', [slug]);
+  },
+
   async getStats() {
-    const [u, p, pub, v] = await Promise.all([
+    const [u, p, pub] = await Promise.all([
       pool.query('SELECT COUNT(*) as count FROM users'),
       pool.query('SELECT COUNT(*) as count FROM pastes'),
-      pool.query("SELECT COUNT(*) as count FROM pastes WHERE visibility='public'"),
-      pool.query('SELECT SUM(views) as total FROM pastes'),
+      pool.query("SELECT COUNT(*) as count FROM pastes WHERE visibility='public'")
     ]);
     return {
-      users: parseInt(u.rows[0].count),
-      pastes: parseInt(p.rows[0].count),
-      publicPastes: parseInt(pub.rows[0].count),
-      totalViews: parseInt(v.rows[0].total) || 0,
+      users: u.rows[0].count,
+      pastes: p.rows[0].count,
+      publicPastes: pub.rows[0].count
     };
   }
 };
