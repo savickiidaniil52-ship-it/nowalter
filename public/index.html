@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoWalter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111;
+  --bg3: #161616;
+  --border: #1e1e1e;
+  --border2: #2a2a2a;
+  --accent: #00aaff;
+  --accent2: #0077cc;
+  --text: #c8c8c8;
+  --text2: #666;
+  --text3: #444;
+  --red: #ff4040;
+  --green: #00ff88;
+  --gold: #ffaa00;
+  --purple: #bb44ff;
+  --orange: #ff6600;
+  --pink: #ff44aa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+a { color: var(--accent); text-decoration: none; cursor: pointer; }
+a:hover { color: #fff; }
+
+/* ---- NAV ---- */
+nav {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.nav-left { display: flex; align-items: center; gap: 24px; }
+.nav-logo { color: var(--accent); font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+.nav-links { display: flex; gap: 20px; }
+.nav-link { color: var(--text2); font-size: 12px; transition: color .15s; }
+.nav-link:hover, .nav-link.active { color: #fff; }
+.nav-link.active { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-user { color: var(--text2); font-size: 12px; }
+.nav-user span { color: var(--accent); }
+.btn-nav { background: none; border: 1px solid var(--border2); color: var(--text2); padding: 4px 12px; cursor: pointer; font-family: inherit; font-size: 12px; transition: all .15s; }
+.btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- PAGES ---- */
+.page { display: none; }
+.page.active { display: block; }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
+.container-wide { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+
+/* ---- HOME ---- */
+.home-header { text-align: center; padding: 40px 0 30px; }
+.home-logo { font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700; color: var(--accent); letter-spacing: 4px; }
+.home-sub { color: var(--text3); font-size: 11px; margin-top: 6px; letter-spacing: 2px; }
+
+.search-bar { display: flex; gap: 0; max-width: 500px; margin: 20px auto; }
+.search-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--border2);
+  border-right: none; color: var(--text); padding: 8px 14px;
+  font-family: inherit; font-size: 12px; outline: none;
+}
+.search-input:focus { border-color: var(--accent); }
+.btn-search {
+  background: var(--accent2); border: 1px solid var(--accent2); color: #fff;
+  padding: 8px 20px; cursor: pointer; font-family: inherit; font-size: 12px;
+  transition: background .15s;
+}
+.btn-search:hover { background: var(--accent); }
+
+.paste-count { text-align: center; color: var(--text3); font-size: 11px; margin-bottom: 16px; }
+
+/* ---- PASTE TABLE ---- */
+.paste-table { width: 100%; border-collapse: collapse; }
+.paste-table th {
+  text-align: left; padding: 8px 12px; color: var(--text3); font-size: 11px;
+  border-bottom: 1px solid var(--border); font-weight: normal; text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.paste-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.paste-table tr:hover td { background: var(--bg3); }
+.paste-table .paste-title { color: var(--accent); }
+.paste-table .paste-title:hover { color: #fff; }
+.paste-table .views { color: var(--text2); text-align: right; }
+.paste-table .author { color: var(--text2); }
+.paste-table .date-col { color: var(--text3); text-align: right; white-space: nowrap; }
+
+/* ---- CREATE PASTE ---- */
+.create-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  padding: 24px;
+  max-width: 700px;
+}
+.create-header { color: var(--accent); font-size: 12px; margin-bottom: 16px; }
+.create-header span { color: var(--text3); }
+.form-input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); padding: 10px 14px; font-family: inherit; font-size: 13px;
+  outline: none; margin-bottom: 10px; resize: none;
+}
+.form-input:focus { border-color: var(--accent); }
+textarea.form-input { min-height: 180px; resize: vertical; }
+.create-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.vis-btns { display: flex; gap: 8px; }
+.vis-btn {
+  background: var(--bg3); border: 1px solid var(--border2); color: var(--text2);
+  padding: 7px 14px; cursor: pointer; font-family: inherit; font-size: 12px;
+  display: flex; align-items: center; gap: 6px; transition: all .15s;
+}
+.vis-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.vis-btn:hover:not(.active) { border-color: var(--text3); color: var(--text); }
+.btn-create {
+  background: var(--accent2); border: none; color: #fff;
+  padding: 8px 20px; cursor: pointer; font-family: inherit; font-size: 12px;
+  display: flex; align-items: center; gap: 6px; transition: background .15s;
+}
+.btn-create:hover { background: var(--accent); }
+
+/* ---- VIEW PASTE ---- */
+.paste-view { background: var(--bg2); border: 1px solid var(--border2); }
+.paste-view-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.paste-view-title { font-size: 15px; color: #fff; font-family: 'Rajdhani', sans-serif; font-weight: 600; }
+.paste-view-meta { color: var(--text3); font-size: 11px; display: flex; gap: 16px; }
+.paste-view-meta span { display: flex; align-items: center; gap: 4px; }
+.paste-view-body { padding: 20px; overflow-x: auto; }
+.paste-content { color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
+.paste-view-actions { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+.btn-copy, .btn-delete {
+  background: none; border: 1px solid var(--border2); color: var(--text2);
+  padding: 5px 14px; cursor: pointer; font-family: inherit; font-size: 11px; transition: all .15s;
+}
+.btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+.btn-delete:hover { border-color: var(--red); color: var(--red); }
+
+/* ---- AUTH ---- */
+.auth-box {
+  max-width: 360px; margin: 60px auto;
+  background: var(--bg2); border: 1px solid var(--border2); padding: 28px;
+}
+.auth-title { font-size: 14px; color: var(--accent); margin-bottom: 20px; }
+.auth-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.auth-tab {
+  padding: 8px 20px; cursor: pointer; color: var(--text2); font-size: 12px;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s;
+}
+.auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.form-group { margin-bottom: 12px; }
+.form-label { display: block; color: var(--text3); font-size: 11px; margin-bottom: 5px; }
+.btn-auth {
+  width: 100%; background: var(--accent2); border: none; color: #fff;
+  padding: 10px; cursor: pointer; font-family: inherit; font-size: 13px;
+  margin-top: 6px; transition: background .15s;
+}
+.btn-auth:hover { background: var(--accent); }
+.auth-error { color: var(--red); font-size: 11px; margin-top: 8px; min-height: 16px; }
+.auth-success { color: var(--green); font-size: 11px; margin-top: 8px; }
+
+/* ---- USERS PAGE ---- */
+.users-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.users-title { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+.users-count { color: var(--text3); font-size: 12px; }
+.user-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); gap: 16px; }
+.user-row:hover { background: var(--bg3); }
+.user-avatar {
+  width: 32px; height: 32px; background: var(--bg3); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; color: var(--text2);
+  flex-shrink: 0;
+}
+.user-name { flex: 1; font-size: 13px; }
+.user-badge {
+  font-size: 10px; padding: 2px 7px; border: 1px solid;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 1px;
+}
+.badge-admin { color: var(--red); border-color: var(--red); }
+.badge-founder { color: var(--gold); border-color: var(--gold); }
+.badge-premium { color: var(--gold); border-color: var(--gold); }
+.badge-elite { color: var(--accent); border-color: var(--accent); }
+.badge-vip { color: var(--purple); border-color: var(--purple); }
+.badge-user { color: var(--text3); border-color: var(--text3); }
+.user-joined { color: var(--text3); font-size: 11px; }
+
+/* ---- ADMIN PANEL ---- */
+.admin-layout { display: grid; grid-template-columns: 180px 1fr; gap: 0; min-height: calc(100vh - 42px); }
+.admin-sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 20px 0; }
+.admin-sidebar-title { color: var(--text3); font-size: 10px; letter-spacing: 2px; padding: 0 16px 12px; text-transform: uppercase; }
+.admin-nav-item {
+  padding: 9px 16px; cursor: pointer; color: var(--text2); font-size: 12px;
+  transition: all .15s; display: block;
+}
+.admin-nav-item:hover, .admin-nav-item.active { background: var(--bg3); color: #fff; border-left: 2px solid var(--accent); }
+.admin-content { padding: 24px; }
+.admin-section { display: none; }
+.admin-section.active { display: block; }
+.admin-section-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #fff; letter-spacing: 1px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card { background: var(--bg3); border: 1px solid var(--border2); padding: 16px; }
+.stat-value { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; color: var(--accent); }
+.stat-label { color: var(--text3); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th {
+  text-align: left; padding: 8px 10px; color: var(--text3); font-size: 10px;
+  border-bottom: 1px solid var(--border); font-weight: normal; text-transform: uppercase; letter-spacing: 1px;
+}
+.admin-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-size: 11px; vertical-align: middle; }
+.admin-table tr:hover td { background: var(--bg3); }
+
+.password-cell {
+  font-size: 10px; color: var(--text3); cursor: pointer; max-width: 120px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.password-cell:hover { color: var(--accent); }
+.password-cell.revealed { color: var(--text); }
+
+.role-select {
+  background: var(--bg3); border: 1px solid var(--border2); color: var(--text);
+  padding: 3px 6px; font-family: inherit; font-size: 11px; cursor: pointer; outline: none;
+}
+.role-select:focus { border-color: var(--accent); }
+
+.btn-ban, .btn-unban, .btn-del-user, .btn-del-paste {
+  border: none; padding: 3px 10px; cursor: pointer;
+  font-family: inherit; font-size: 10px; transition: all .15s;
+}
+.btn-ban { background: var(--red); color: #fff; }
+.btn-ban:hover { opacity: .8; }
+.btn-unban { background: var(--green); color: #000; }
+.btn-unban:hover { opacity: .8; }
+.btn-del-user, .btn-del-paste { background: #222; color: var(--red); border: 1px solid #333; }
+.btn-del-user:hover, .btn-del-paste:hover { border-color: var(--red); }
+
+.status-active { color: var(--green); }
+.status-banned { color: var(--red); }
+
+/* ---- TOAST ---- */
+#toast {
+  position: fixed; bottom: 20px; right: 20px; background: var(--bg3);
+  border: 1px solid var(--border2); color: var(--text); padding: 10px 18px;
+  font-size: 12px; z-index: 9999; opacity: 0; transition: opacity .2s;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; }
+#toast.ok { border-color: var(--green); color: var(--green); }
+#toast.err { border-color: var(--red); color: var(--red); }
+
+/* ---- MISC ---- */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--text2);
+  font-size: 12px; cursor: pointer; margin-bottom: 20px; transition: color .15s;
+  background: none; border: none; font-family: inherit;
+}
+.back-btn:hover { color: var(--accent); }
+.empty { text-align: center; color: var(--text3); padding: 40px; font-size: 12px; }
+.tag-private { color: var(--orange); font-size: 10px; }
+.loading { text-align: center; color: var(--text3); padding: 20px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-logo" onclick="navigate('home')" style="cursor:pointer">NOWALTER</div>
+    <div class="nav-links">
+      <a class="nav-link" onclick="navigate('home')">Home</a>
+      <a class="nav-link" onclick="navigate('create')">Add Paste</a>
+      <a class="nav-link" onclick="navigate('users')">Users</a>
+      <a class="nav-link" id="adminNavLink" onclick="navigate('admin')" style="display:none">Admin</a>
+    </div>
+  </div>
+  <div class="nav-right" id="navRight">
+    <span class="nav-user" id="navUser" style="display:none"></span>
+    <button class="btn-nav" id="btnLogin" onclick="navigate('auth')">Login</button>
+    <button class="btn-nav" id="btnRegister" onclick="navigate('auth', 'register')">Register</button>
+    <button class="btn-nav" id="btnLogout" onclick="logout()" style="display:none">Logout</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home" class="page">
+  <div class="container">
+    <div class="home-header">
+      <div class="home-logo">NOWALTER</div>
+      <div class="home-sub">PASTE · SHARE · ANONYMOUS</div>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" id="searchInput" placeholder="Search for..." onkeydown="if(event.key==='Enter')searchPastes()">
+      <button class="btn-search" onclick="searchPastes()">Search</button>
+    </div>
+    <div class="paste-count" id="pasteCount"></div>
+    <div id="pasteList"></div>
+  </div>
+</div>
+
+<!-- ===== CREATE PAGE ===== -->
+<div id="page-create" class="page">
+  <div class="container">
+    <button class="back-btn" onclick="navigate('home')">← Back</button>
+    <div class="create-box">
+      <div class="create-header"><span>$</span> Create new paste</div>
+      <input class="form-input" id="pasteTitle" placeholder="Title..." maxlength="100">
+      <textarea class="form-input" id="pasteContent" placeholder="Paste your content here..."></textarea>
+      <div class="create-actions">
+        <div class="vis-btns">
+          <button class="vis-btn active" id="btnPublic" onclick="setVis('public')">🌐 Public</button>
+          <button class="vis-btn" id="btnPrivate" onclick="setVis('private')">🔒 Private</button>
+        </div>
+        <button class="btn-create" onclick="createPaste()">✈ Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIEW PASTE PAGE ===== -->
+<div id="page-view" class="page">
+  <div class="container">
+    <button class="back-btn" onclick="navigate('home')">← Back</button>
+    <div class="paste-view" id="pasteViewBox"></div>
+  </div>
+</div>
+
+<!-- ===== AUTH PAGE ===== -->
+<div id="page-auth" class="page">
+  <div class="container">
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
+        <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Register</div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="formLogin">
+        <div class="form-group">
+          <label class="form-label">USERNAME</label>
+          <input class="form-input" id="loginUser" placeholder="username" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PASSWORD</label>
+          <input class="form-input" id="loginPass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn-auth" onclick="doLogin()">Login</button>
+        <div class="auth-error" id="loginError"></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="formRegister" style="display:none">
+        <div class="form-group">
+          <label class="form-label">USERNAME</label>
+          <input class="form-input" id="regUser" placeholder="username (letters, numbers, _)" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PASSWORD</label>
+          <input class="form-input" id="regPass" type="password" placeholder="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+        </div>
+        <button class="btn-auth" onclick="doRegister()">Register</button>
+        <div class="auth-error" id="regError"></div>
+        <div class="auth-success" id="regSuccess"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== USERS PAGE ===== -->
+<div id="page-users" class="page">
+  <div class="container">
+    <div class="users-header">
+      <div class="users-title">USERS</div>
+      <div class="users-count" id="usersCount"></div>
+    </div>
+    <div id="usersList"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div id="page-admin" class="page">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-title">Admin Panel</div>
+      <a class="admin-nav-item active" onclick="showAdminSection('dashboard')">📊 Dashboard</a>
+      <a class="admin-nav-item" onclick="showAdminSection('users')">👥 Users</a>
+      <a class="admin-nav-item" onclick="showAdminSection('pastes')">📋 Pastes</a>
+    </div>
+    <div class="admin-content">
+
+      <!-- Dashboard -->
+      <div id="admin-dashboard" class="admin-section active">
+        <div class="admin-section-title">Dashboard</div>
+        <div class="stats-grid" id="statsGrid"></div>
+      </div>
+
+      <!-- Users -->
+      <div id="admin-users" class="admin-section">
+        <div class="admin-section-title">All Users — Credentials DB</div>
+        <div id="adminUsersTable"></div>
+      </div>
+
+      <!-- Pastes -->
+      <div id="admin-pastes" class="admin-section">
+        <div class="admin-section-title">All Pastes</div>
+        <div id="adminPastesTable"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================
+// STATE
+// ========================
+let currentUser = null;
+let pasteVisibility = 'public';
+let allPastes = [];
+
+// ========================
+// INIT
+// ========================
+async function init() {
+  await checkAuth();
+  handleRoute();
+  window.addEventListener('popstate', handleRoute);
+}
+
+function handleRoute() {
+  const path = window.location.pathname;
+  const slug = path.match(/^\/paste\/([^/]+)$/)?.[1];
+  if (slug) {
+    viewPaste(slug, false);
+  } else if (path === '/create') {
+    showPage('create');
+  } else if (path === '/users') {
+    loadUsersPage();
+  } else if (path === '/admin') {
+    if (currentUser?.role === 'admin') { showPage('admin'); loadAdminDashboard(); }
+    else navigate('home');
+  } else if (path === '/login' || path === '/register') {
+    showPage('auth');
+    if (path === '/register') switchAuthTab('register');
+  } else {
+    loadHomePage();
+  }
+}
+
+// ========================
+// NAVIGATION
+// ========================
+function navigate(page, sub) {
+  const paths = { home: '/', create: '/create', users: '/users', admin: '/admin', auth: '/login' };
+  const p = sub === 'register' ? '/register' : (paths[page] || '/');
+  history.pushState({}, '', p);
+  handleRoute();
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + name);
+  if (el) el.classList.add('active');
+}
+
+// ========================
+// AUTH
+// ========================
+async function checkAuth() {
+  try {
+    const r = await fetch('/api/auth/me');
+    const d = await r.json();
+    currentUser = d.user;
+    updateNav();
+  } catch(e) {}
+}
+
+function updateNav() {
+  const loggedIn = !!currentUser;
+  document.getElementById('btnLogin').style.display = loggedIn ? 'none' : '';
+  document.getElementById('btnRegister').style.display = loggedIn ? 'none' : '';
+  document.getElementById('btnLogout').style.display = loggedIn ? '' : 'none';
+  const navUser = document.getElementById('navUser');
+  const adminLink = document.getElementById('adminNavLink');
+  if (loggedIn) {
+    const roleColor = getRoleColor(currentUser.role);
+    navUser.innerHTML = `[<span style="color:${roleColor}">${currentUser.role.toUpperCase()}</span>] ${currentUser.username}`;
+    navUser.style.display = '';
+    adminLink.style.display = currentUser.role === 'admin' ? '' : 'none';
+  } else {
+    navUser.style.display = 'none';
+    adminLink.style.display = 'none';
+  }
+}
+
+function getRoleColor(role) {
+  const colors = { admin: '#ff4040', founder: '#ffaa00', premium: '#ffaa00', elite: '#00aaff', vip: '#bb44ff', user: '#666' };
+  return colors[role] || '#666';
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  document.getElementById('loginError').textContent = '';
+  if (!username || !password) { document.getElementById('loginError').textContent = 'Fill all fields'; return; }
+  const r = await fetch('/api/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username, password}) });
+  const d = await r.json();
+  if (d.error) { document.getElementById('loginError').textContent = d.error; return; }
+  currentUser = d.user;
+  updateNav();
+  toast('Welcome back, ' + d.user.username + '!', 'ok');
+  navigate('home');
+}
+
+async function doRegister() {
+  const username = document.getElementById('regUser').value.trim();
+  const password = document.getElementById('regPass').value;
+  document.getElementById('regError').textContent = '';
+  document.getElementById('regSuccess').textContent = '';
+  const r = await fetch('/api/auth/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username, password}) });
+  const d = await r.json();
+  if (d.error) { document.getElementById('regError').textContent = d.error; return; }
+  currentUser = d.user;
+  updateNav();
+  if (d.user.role === 'admin') toast('Welcome Admin! You are the first user.', 'ok');
+  else toast('Account created!', 'ok');
+  navigate('home');
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  currentUser = null;
+  updateNav();
+  toast('Logged out');
+  navigate('home');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('formLogin').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('formRegister').style.display = tab === 'register' ? '' : 'none';
+  history.replaceState({}, '', tab === 'register' ? '/register' : '/login');
+}
+
+// ========================
+// HOME / PASTES LIST
+// ========================
+async function loadHomePage() {
+  showPage('home');
+  await loadPastes();
+}
+
+async function loadPastes(search = '') {
+  const url = '/api/pastes' + (search ? '?search=' + encodeURIComponent(search) : '');
+  const r = await fetch(url);
+  const d = await r.json();
+  allPastes = d.pastes || [];
+  renderPasteList(allPastes);
+}
+
+function renderPasteList(pastes) {
+  const count = document.getElementById('pasteCount');
+  count.textContent = `Showing ${pastes.length} (of ${pastes.length} total) pastes`;
+  const list = document.getElementById('pasteList');
+  if (!pastes.length) { list.innerHTML = '<div class="empty">No pastes found</div>'; return; }
+  list.innerHTML = `
+    <table class="paste-table">
+      <thead><tr>
+        <th>Title</th>
+        <th style="text-align:right">Views</th>
+        <th>Created by</th>
+        <th style="text-align:right">Added</th>
+      </tr></thead>
+      <tbody>
+        ${pastes.map(p => `
+          <tr>
+            <td><a class="paste-title" onclick="viewPaste('${p.slug}')">${escHtml(p.title)}</a></td>
+            <td class="views">${p.views}</td>
+            <td class="author">${p.username || 'Anonymous'}</td>
+            <td class="date-col">${formatDate(p.created_at)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function searchPastes() {
+  const q = document.getElementById('searchInput').value.trim();
+  loadPastes(q);
+}
+
+// ========================
+// VIEW PASTE
+// ========================
+async function viewPaste(slug, push = true) {
+  if (push) history.pushState({}, '', '/paste/' + slug);
+  showPage('view');
+  document.getElementById('pasteViewBox').innerHTML = '<div class="loading">Loading...</div>';
+  const r = await fetch('/api/pastes/' + slug);
+  const d = await r.json();
+  if (d.error) { document.getElementById('pasteViewBox').innerHTML = `<div class="empty">${d.error}</div>`; return; }
+  const p = d.paste;
+  const canDelete = currentUser && (currentUser.id === p.user_id || currentUser.role === 'admin');
+  document.getElementById('pasteViewBox').innerHTML = `
+    <div class="paste-view-header">
+      <div>
+        <div class="paste-view-title">${escHtml(p.title)} ${p.visibility==='private'?'<span class="tag-private">[PRIVATE]</span>':''}</div>
+      </div>
+      <div class="paste-view-meta">
+        <span>👁 ${p.views + 1} views</span>
+        <span>👤 ${p.username || 'Anonymous'}</span>
+        <span>📅 ${formatDate(p.created_at)}</span>
+      </div>
+    </div>
+    <div class="paste-view-body">
+      <pre class="paste-content">${escHtml(p.content)}</pre>
+    </div>
+    <div class="paste-view-actions">
+      <button class="btn-copy" onclick="copyPaste('${slug}')">📋 Copy</button>
+      ${canDelete ? `<button class="btn-delete" onclick="deletePaste('${slug}')">🗑 Delete</button>` : ''}
+    </div>
+  `;
+}
+
+async function copyPaste(slug) {
+  const content = document.querySelector('.paste-content')?.textContent;
+  if (content) { await navigator.clipboard.writeText(content); toast('Copied!', 'ok'); }
+}
+
+async function deletePaste(slug) {
+  if (!confirm('Delete this paste?')) return;
+  const r = await fetch('/api/pastes/' + slug, { method: 'DELETE' });
+  const d = await r.json();
+  if (d.success) { toast('Deleted', 'ok'); navigate('home'); }
+  else toast(d.error || 'Error', 'err');
+}
+
+// ========================
+// CREATE PASTE
+// ========================
+function setVis(v) {
+  pasteVisibility = v;
+  document.getElementById('btnPublic').classList.toggle('active', v === 'public');
+  document.getElementById('btnPrivate').classList.toggle('active', v === 'private');
+}
+
+async function createPaste() {
+  const title = document.getElementById('pasteTitle').value.trim();
+  const content = document.getElementById('pasteContent').value;
+  if (!title) { toast('Enter a title', 'err'); return; }
+  if (!content) { toast('Enter content', 'err'); return; }
+  const r = await fetch('/api/pastes', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ title, content, visibility: pasteVisibility })
+  });
+  const d = await r.json();
+  if (d.error) { toast(d.error, 'err'); return; }
+  document.getElementById('pasteTitle').value = '';
+  document.getElementById('pasteContent').value = '';
+  toast('Paste created!', 'ok');
+  viewPaste(d.slug);
+}
+
+// ========================
+// USERS PAGE
+// ========================
+async function loadUsersPage() {
+  showPage('users');
+  document.getElementById('usersList').innerHTML = '<div class="loading">Loading...</div>';
+  const r = await fetch('/api/pastes'); // we use users from admin or public endpoint
+  // For public users page, let's get from admin if admin, else show limited
+  let users = [];
+  if (currentUser?.role === 'admin') {
+    const ur = await fetch('/api/admin/users');
+    const ud = await ur.json();
+    users = ud.users || [];
+  } else {
+    // Public: fetch users via a basic approach — we show from paste authors
+    const pr = await fetch('/api/pastes');
+    const pd = await pr.json();
+    // Build unique users from pastes
+    const seen = new Set();
+    users = [];
+    (pd.pastes || []).forEach(p => {
+      if (p.username && !seen.has(p.username)) {
+        seen.add(p.username);
+        users.push({ username: p.username, role: 'user', created_at: p.created_at });
+      }
+    });
+  }
+  document.getElementById('usersCount').textContent = users.length + ' registered';
+  if (!users.length) { document.getElementById('usersList').innerHTML = '<div class="empty">No users yet</div>'; return; }
+  document.getElementById('usersList').innerHTML = users.map(u => `
+    <div class="user-row">
+      <div class="user-avatar">${u.username[0].toUpperCase()}</div>
+      <div class="user-name">
+        <span class="user-badge badge-${u.role}">[${u.role.toUpperCase()}]</span>
+        ${escHtml(u.username)}
+      </div>
+      <div class="user-joined">${formatRelative(u.created_at)}</div>
+    </div>
+  `).join('');
+}
+
+// ========================
+// ADMIN PANEL
+// ========================
+async function loadAdminDashboard() {
+  const r = await fetch('/api/admin/stats');
+  const d = await r.json();
+  if (d.error) { navigate('home'); return; }
+  const s = d.stats;
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${s.users}</div><div class="stat-label">Users</div></div>
+    <div class="stat-card"><div class="stat-value">${s.pastes}</div><div class="stat-label">Total Pastes</div></div>
+    <div class="stat-card"><div class="stat-value">${s.publicPastes}</div><div class="stat-label">Public Pastes</div></div>
+    <div class="stat-card"><div class="stat-value">${s.totalViews}</div><div class="stat-label">Total Views</div></div>
+  `;
+}
+
+async function loadAdminUsers() {
+  const r = await fetch('/api/admin/users');
+  const d = await r.json();
+  if (d.error) return;
+  const users = d.users;
+  document.getElementById('adminUsersTable').innerHTML = `
+    <table class="admin-table">
+      <thead><tr>
+        <th>ID</th><th>Username</th><th>Password (hash)</th><th>Role</th>
+        <th>Status</th><th>Joined</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        ${users.map(u => `
+          <tr id="user-row-${u.id}">
+            <td style="color:var(--text3)">${u.id}</td>
+            <td>${escHtml(u.username)}</td>
+            <td class="password-cell" onclick="togglePass(this, '${escHtml(u.password)}')" title="Click to reveal">••••••••</td>
+            <td>
+              <select class="role-select" onchange="changeRole(${u.id}, this.value)" ${u.id === currentUser.id ? 'disabled' : ''}>
+                ${['user','vip','elite','premium','admin'].map(r => `<option value="${r}" ${u.role===r?'selected':''}>${r}</option>`).join('')}
+              </select>
+            </td>
+            <td class="status-${u.status}">${u.status}</td>
+            <td style="color:var(--text3)">${formatDate(u.created_at)}</td>
+            <td style="display:flex;gap:4px">
+              ${u.id !== currentUser.id ? `
+                ${u.status === 'active'
+                  ? `<button class="btn-ban" onclick="banUser(${u.id}, 'banned')">Ban</button>`
+                  : `<button class="btn-unban" onclick="banUser(${u.id}, 'active')">Unban</button>`}
+                <button class="btn-del-user" onclick="deleteUser(${u.id})">Del</button>
+              ` : '<span style="color:var(--text3)">you</span>'}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function loadAdminPastes() {
+  const r = await fetch('/api/admin/pastes');
+  const d = await r.json();
+  if (d.error) return;
+  document.getElementById('adminPastesTable').innerHTML = `
+    <table class="admin-table">
+      <thead><tr>
+        <th>Title</th><th>Author</th><th>Visibility</th><th>Views</th><th>Created</th><th>Action</th>
+      </tr></thead>
+      <tbody>
+        ${d.pastes.map(p => `
+          <tr>
+            <td><a onclick="viewPaste('${p.slug}')" style="cursor:pointer">${escHtml(p.title)}</a></td>
+            <td>${p.username || 'Anonymous'}</td>
+            <td>${p.visibility === 'private' ? '<span class="tag-private">private</span>' : 'public'}</td>
+            <td>${p.views}</td>
+            <td style="color:var(--text3)">${formatDate(p.created_at)}</td>
+            <td><button class="btn-del-paste" onclick="adminDeletePaste('${p.slug}', this)">Del</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function showAdminSection(name) {
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('admin-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'users') loadAdminUsers();
+  if (name === 'pastes') loadAdminPastes();
+  if (name === 'dashboard') loadAdminDashboard();
+}
+
+async function changeRole(userId, role) {
+  const r = await fetch(`/api/admin/users/${userId}/role`, {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({role})
+  });
+  const d = await r.json();
+  if (d.error) { toast(d.error, 'err'); return; }
+  toast('Role updated', 'ok');
+}
+
+async function banUser(userId, status) {
+  const r = await fetch(`/api/admin/users/${userId}/status`, {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({status})
+  });
+  const d = await r.json();
+  if (d.error) { toast(d.error, 'err'); return; }
+  toast(status === 'banned' ? 'User banned' : 'User unbanned', 'ok');
+  loadAdminUsers();
+}
+
+async function deleteUser(userId) {
+  if (!confirm('Delete user and all their pastes?')) return;
+  const r = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+  const d = await r.json();
+  if (d.error) { toast(d.error, 'err'); return; }
+  toast('User deleted', 'ok');
+  loadAdminUsers();
+}
+
+async function adminDeletePaste(slug, btn) {
+  if (!confirm('Delete paste?')) return;
+  const r = await fetch(`/api/admin/pastes/${slug}`, { method: 'DELETE' });
+  const d = await r.json();
+  if (d.error) { toast(d.error, 'err'); return; }
+  btn.closest('tr').remove();
+  toast('Paste deleted', 'ok');
+}
+
+function togglePass(el, hash) {
+  if (el.classList.contains('revealed')) {
+    el.textContent = '••••••••';
+    el.classList.remove('revealed');
+  } else {
+    el.textContent = hash;
+    el.classList.add('revealed');
+  }
+}
+
+// ========================
+// UTILS
+// ========================
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(dt) {
+  if (!dt) return '';
+  const d = new Date(dt);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const day = d.getDate();
+  const suffix = day===1||day===21||day===31?'st':day===2||day===22?'nd':day===3||day===23?'rd':'th';
+  return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
+}
+
+function formatRelative(dt) {
+  if (!dt) return '';
+  const diff = Date.now() - new Date(dt).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return 'today';
+  if (days === 1) return '1 day ago';
+  return `${days} days ago`;
+}
+
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.className = '', 2500);
+}
+
+// ========================
+// START
+// ========================
+init();
+</script>
+</body>
+</html>
