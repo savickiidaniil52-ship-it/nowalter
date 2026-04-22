@@ -9,35 +9,39 @@ function generateSlug() {
   return slug;
 }
 
-// Get all public pastes
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const search = req.query.search || '';
-  const pastes = db.getPublicPastes(search);
+  const pastes = await db.getPublicPastes(search);
   res.json({ pastes });
 });
 
-// Create paste
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { title, content, visibility } = req.body;
     if (!title || !content) return res.json({ error: 'Title and content required' });
 
     let slug;
-    do { slug = generateSlug(); } while (db.getPasteBySlug(slug));
+    do { slug = generateSlug(); } while (await db.getPasteBySlug(slug));
 
     const userId = req.currentUser ? req.currentUser.id : null;
     const vis = visibility === 'private' ? 'private' : 'public';
 
-    db.createPaste(slug, title.trim(), content, vis, userId);
+    await db.createPaste(slug, title.trim(), content, vis, userId);
     res.json({ success: true, slug });
   } catch (e) {
+    console.error(e);
     res.json({ error: 'Failed to create paste' });
   }
 });
 
-// Get single paste
-router.get('/:slug', (req, res) => {
-  const paste = db.getPasteBySlug(req.params.slug);
+router.get('/user/mine', async (req, res) => {
+  if (!req.currentUser) return res.json({ error: 'Not authenticated' });
+  const pastes = await db.getUserPastes(req.currentUser.id);
+  res.json({ pastes });
+});
+
+router.get('/:slug', async (req, res) => {
+  const paste = await db.getPasteBySlug(req.params.slug);
   if (!paste) return res.json({ error: 'Paste not found' });
 
   if (paste.visibility === 'private') {
@@ -46,29 +50,21 @@ router.get('/:slug', (req, res) => {
     }
   }
 
-  db.incrementViews(req.params.slug);
+  await db.incrementViews(req.params.slug);
   res.json({ paste });
 });
 
-// Delete paste
-router.delete('/:slug', (req, res) => {
+router.delete('/:slug', async (req, res) => {
   if (!req.currentUser) return res.json({ error: 'Not authenticated' });
-  const paste = db.getPasteBySlug(req.params.slug);
+  const paste = await db.getPasteBySlug(req.params.slug);
   if (!paste) return res.json({ error: 'Not found' });
 
   const isOwner = paste.user_id === req.currentUser.id;
   const isAdmin = req.currentUser.role === 'admin';
   if (!isOwner && !isAdmin) return res.json({ error: 'No permission' });
 
-  db.deletePaste(req.params.slug);
+  await db.deletePaste(req.params.slug);
   res.json({ success: true });
-});
-
-// Get my pastes
-router.get('/user/mine', (req, res) => {
-  if (!req.currentUser) return res.json({ error: 'Not authenticated' });
-  const pastes = db.getUserPastes(req.currentUser.id);
-  res.json({ pastes });
 });
 
 module.exports = router;
