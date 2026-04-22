@@ -4,6 +4,8 @@ const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
 const db = require('./db');
 
+const dns = require('node:dns');
+dns.setDefaultResultOrder('ipv4first');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
